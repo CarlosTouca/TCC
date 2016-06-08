@@ -21,7 +21,7 @@ byte ip[] = {
 EthernetServer server(80);  //criando um objeto do tipo servidor
 
 int led = 7;
-char dado;
+char dado;	
 
 
 void setup()

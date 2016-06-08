@@ -26,9 +26,12 @@ class Light(object):
     #http GET no id do sensor
     return self.VALUE
 
+  def update_led(self, value):
+    self.VALUE = value
+
   def change_led(self, value):
     if value:
        sendToLightClient('1')
     else:
        sendToLightClient('0')
-    self.VALUE = value
+    self.update_led(value)

@@ -23,13 +23,26 @@ def about():
 def change_led_status(status):
   # Check the value of the parameter
   if status == 0:
-     print("entrei no if")
      light1.change_led(False)
   elif status == 1:
-    light1.change_led(True)
+     light1.change_led(True)
   else:
     return ('Error', 500)
   return ('', 200)
+
+
+# Change LED value POST request.
+@app.route("/update_led/<int:status>", methods=['GET'])
+def update_led(status):
+  # Check the value of the parameter
+  if status == 0:
+     light1.update_led(False)
+  elif status == 1:
+     light1.update_led(True)
+  else:
+    return ('Error', 500)
+  return ('', 200)
+
 
 # Starts the app listening to port 5000 with debug mode
 if __name__ == "__main__":
