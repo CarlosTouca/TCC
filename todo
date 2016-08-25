@@ -1,0 +1,53 @@
+Server
+1 Add a device
+2 List devices (WEB)
+3 Show device status (WEB)
+4 Send commands to device (WEB) Ex:on/off
+
+  Tasks:
+    Implement device table (1,2)
+    Implement server to listen for commands (subscribe, status) (1,2)
+    Create Page for Listing the devices (2)
+    Create Page for each device (3)
+    Implement behavior to send switch commands (4)
+    Add a feature to the device Page: switch on/off (4)
+
+
+Device
+1 Subscribe to a server
+2 Listen to commands
+  2.1 Turn on/off
+  2.2 Send Status (power consuption, on/off)
+3 Send updates
+
+  Tasks:
+    Implement subscribe routine (device should send its GUID and Type to Server) (1)
+    Implement routine to listen for commands from server (switch, status?)
+    Implement routine to send updates if data changes
+
+
+Protocol:
+Subscribe
+  Device                  Server
+    --------subscribe------->
+       send GUID and Type
+    <-------ack--------------
+       send identifier?
+
+Initially, the device will send updates to the server
+Status (Polling or Frequent Updates?)
+  Device                   Server
+    <-------status------------
+    --------status----------->
+       send On/Off
+       send power consumption(if applicable)
+
+Switch
+  Device                    Server
+    <-------switch-------------
+        send new value?
+    --------ack--------------->
+
+Type:
+  Sensor
+  Switch
