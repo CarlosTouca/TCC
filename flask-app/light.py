@@ -1,7 +1,9 @@
-import sys 
+import sys
 import socket
+import requests
 
-def sendToLightClient (command):
+# deprecated
+def sendToLightClientSocket (command):
 	print command
 	HOST = '192.168.15.201'    # The remote host
 	PORT = 80              # The same port as used by the server
@@ -12,15 +14,26 @@ def sendToLightClient (command):
 	s.close()
 	print 'Received', repr(data)
 
+def sendToLightClient (ip,command):
+	print command
+	HOST = ip    	# The remote host
+	PORT = '80'              		# The same port as used by the server
+	url = 'http://' + HOST + ':' + PORT + '/gpio/' + command
+	r = requests.get(url);
+	print r
+
 class Light(object):
-  
+
   #id do sensor
-  SENSOR_ID = 0
+  SENSOR_ID = '0'
   VALUE = 0
-  def __init__(self, value, id):
+  IP = '192.168.15.21'
+
+  def __init__(self, value, id, ip):
     #set sensor initial value and id
     self.VALUE = value
     self.SENSOR_ID = id
+    self.IP = ip
 
   def read_sensor(self):
     #http GET no id do sensor
@@ -31,7 +44,7 @@ class Light(object):
 
   def change_led(self, value):
     if value:
-       sendToLightClient('1')
+       sendToLightClient(self.IP,'0')
     else:
-       sendToLightClient('0')
+       sendToLightClient(self.IP,'1')
     self.update_led(value)
