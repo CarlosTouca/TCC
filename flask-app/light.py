@@ -25,14 +25,14 @@ def sendToLightClient (ip,command):
 class Light(object):
 
   #id do sensor
-  SENSOR_ID = '0'
+  DEVICE_ID = '0'
   VALUE = 0
   IP = '192.168.15.21'
 
   def __init__(self, value, id, ip):
     #set sensor initial value and id
     self.VALUE = value
-    self.SENSOR_ID = id
+    self.DEVICE_ID = id
     self.IP = ip
 
   def read_sensor(self):
