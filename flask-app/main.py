@@ -30,13 +30,20 @@ def change_status(guid,status):
   print "guid" + guid
   l = lights[guid]
   if status == 0:
-     l.change_led(False)
+     response = l.change_led(False)
   elif status == 1:
-     l.change_led(True)
+     response = l.change_led(True)
   else:
     return ('Error', 500)
   print l.read_sensor()
-  return (str(l.read_sensor()), 200)
+  #status = int(response['sts'])
+  status = 1
+  if status == 1:
+      on = True
+  else:
+      on = False
+  return render_template('status.html', value=on, raw=str(response))
+  #return ('{sts:'+str(l.read_sensor())+'}', 200)
 
 
 # Change LED value POST request.
