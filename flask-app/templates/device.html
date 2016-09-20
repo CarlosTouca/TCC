@@ -9,7 +9,7 @@
   <meta name="author" content="">
   <link rel="icon" href="{{ url_for('static', filename='images/favicon.ico') }}">
 
-  <title>Flask Internet of Things App</title>
+  <title>Echo</title>
 
   <link href="{{ url_for('static', filename='css/bootstrap.min.css') }}" rel="stylesheet">
 
@@ -36,8 +36,18 @@
     </div>
 
     <div class="jumbotron">
-      <h1>About</h1>
-      <p class="lead">Echo prototype.</p>
+      <h1>{{device.DEVICE_ID}}</h1>
+      <p class="lead">{{device.DEVICE_ID}}</p>
+      {% for key, value in device.FEATURES.iteritems() %}
+          <div class="row marketing">
+              <div id='div{{loop.index}}'>
+                <span>{{ key }}:</span>
+                <span>{{ value }}</span>
+                <button type="button" id="set_on" onclick="set_on('{{ value.DEVICE_ID }}','{{loop.index}}')" class="btn btn-success">on</button>
+                <button type="button" id="set_off" onclick="set_off('{{ value.DEVICE_ID }}','{{loop.index}}')" class="btn btn-danger">off</button>
+              </div>
+          </div>
+      {% endfor %}
     </div>
 
     <footer class="footer">

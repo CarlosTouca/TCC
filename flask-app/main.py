@@ -1,4 +1,6 @@
 import light
+import json
+import io
 from flask import *
 
 app = Flask(__name__)
@@ -6,9 +8,41 @@ app = Flask(__name__)
 #lights = {light1.DEVICE_ID:light1}
 lights = {}
 
-def add_device(device_id,ip_str):
+DATABASE_FILE_NAME = "dump.js"
+
+def load_database():
+    try:
+        f = open(DATABASE_FILE_NAME)
+        lights = json.loads(f.read())
+    except IOError:
+        lights = {}
+    except ValueError:
+        f.close()
+
+
+def update_database (devices):
+    # TODO try to make some simple cacheing treatment
+    # maybe a structure with a flag indicating modification made
+    print devices
+    #dump = json.dumps(devices)
+    #f = open(DATABASE_FILE_NAME,"w")
+    #f.write(dump)
+    #f.close()
+
+def zero_database ():
+    lights = {}
+    update_database(lights)
+
+def add_device(device_id,ip_str,json_encoded_features):
     l = light.Light(False,device_id,ip_str)
+    try:
+        l.FEATURES = json.loads(json_encoded_features)
+    except IOError:
+        l.FEATURES = { 'gpio':'bool' }
+    except ValueError:
+        l.FEATURES = { 'gpio':'bool' }
     lights[device_id] = l
+    update_database(lights)
 
 # Index route
 @app.route("/")
@@ -23,8 +57,13 @@ def about():
   # Render the about.html template
   return render_template('about.html')
 
+@app.route("/<string:guid>", methods=['GET'])
+def detail(guid):
+    light = lights[guid]
+    return render_template('device.html', device=light)
+
 # Change LED value POST request.
-@app.route("/change_status/<string:guid>/<int:status>", methods=['POST'])
+@app.route("/change_status/<string:guid>/<int:status>", methods=['POST','GET'])
 def change_status(guid,status):
   # Check the value of the parameter
   print "guid" + guid
@@ -47,41 +86,30 @@ def change_status(guid,status):
 
 
 # Change LED value POST request.
-@app.route("/change_led_status/<int:status>", methods=['POST'])
-def change_led_status(status):
+@app.route("/update_status/<string:guid>/<int:status>", methods=['POST','GET'])
+def update_status(guid,status):
   # Check the value of the parameter
+  print "guid" + guid
+  l = lights[guid]
   if status == 0:
-      print "not implemented!"
-     #light1.change_led(False)
+     response = l.update_led(False)
   elif status == 1:
-      print "not implemented!"
-     #light1.change_led(True)
+     response = l.update_led(True)
   else:
     return ('Error', 500)
   return ('', 200)
 
-
-# Change LED value POST request.
-@app.route("/update_led/<int:status>", methods=['GET'])
-def update_led(status):
-  # Check the value of the parameter
-  if status == 0:
-      print "not implemented!"
-     #light1.update_led(False)
-  elif status == 1:
-      print "not implemented!"
-     #light1.update_led(True)
-  else:
-    return ('Error', 500)
-  return ('', 200)
-
-@app.route("/subscribe/<string:guid>", methods=['GET'])
+@app.route("/subscribe/<string:guid>", methods=['GET','POST'])
 def subscribe(guid):
     h = request.environ['REMOTE_ADDR']
     print 'New device:' + guid + '@' + h
-    add_device (guid,h)
+    print request.__dict__
+    print request.data
+    add_device (guid,h,request.data)
     return ('OK', 200)
 
 # Starts the app listening to port 5000 with debug mode
 if __name__ == "__main__":
+  # read data from file (lights)
+  load_database()
   app.run(host="0.0.0.0", debug=True)

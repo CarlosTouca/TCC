@@ -28,12 +28,24 @@ def sendToLightClient (ip,command):
 	#response_data = json.loads(r.content)
 	return response_data
 
+def as_light(dct):
+  if '__light__' in dct:
+    return Light(dct['value'], dct['id'], dct['ip'])
+  return dct
+
+#class ComplexEncoder(json.JSONEncoder):
+#  def default(self, obj):
+#    if isinstance(obj, complex):
+#    return [obj.real, obj.imag]
+#  return json.JSONEncoder.default(self, obj)
+
 class Light(object):
 
 	#id do sensor
 	DEVICE_ID = '0'
 	VALUE = 0
 	IP = 'localhost'
+	FEATURES = {}
 
 	def __init__(self, value, id, ip):
 		#set sensor initial value and id
@@ -64,3 +76,6 @@ class Light(object):
 			response = sendToLightClient(self.IP,'1')
 			#self.update_status (response)
 		return response
+
+	def __str__(self):
+		return '{ \'value\':'+ self.VALUE + ',' +'}'

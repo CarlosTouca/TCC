@@ -8,9 +8,16 @@ Server
     Implement device table (1,2)
     Implement server to listen for commands (subscribe, status) (1,2)
     Create Page for Listing the devices (2)
-    Create Page for each device (3)
+      -> This page should list and show status (on/off)
+      -> This page should not refresh if new devices appeared (just show a notification)
+
+
     Implement behavior to send switch commands (4)
-    Add a feature to the device Page: switch on/off (4)
+      - the device should send new status (ok, it needs parsing althougth)
+    Create Page for each device (3)
+      Add a feature to the device Page: switch on/off (4)
+
+    Should be able to store data on json****
 
 
 Device
@@ -51,3 +58,7 @@ Switch
 Type:
   Sensor
   Switch
+
+
+Protocol
+COMMAND
