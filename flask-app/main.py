@@ -6,32 +6,48 @@ from flask import *
 app = Flask(__name__)
 #light1 = light.Light(False,'0','192.168.15.21')
 #lights = {light1.DEVICE_ID:light1}
-lights = {}
+# lights = {}
 
 DATABASE_FILE_NAME = "dump.js"
 
-def load_database():
+def load_database(devices):
+    #devices = {}
     try:
         f = open(DATABASE_FILE_NAME)
-        lights = json.loads(f.read())
+        dict = json.loads(f.read())
+        for key,value in dict.iteritems():
+            l = light.Light(False,"","")
+            l.DEVICE_ID = value["DEVICE_ID"].encode('ascii')
+            l.IP = value["IP"].encode('ascii')
+            l.VALUE = value["VALUE"]
+            l.FEATURES = value["FEATURES"]
+            ascii_key = key.encode('ascii')
+            devices[ascii_key] = l
     except IOError:
-        lights = {}
+        print "IOError Reading Database"
+        #devices = {}
     except ValueError:
+        print "ValueError Reading Database"
         f.close()
+    f.close()
 
 
 def update_database (devices):
     # TODO try to make some simple cacheing treatment
     # maybe a structure with a flag indicating modification made
     print devices
-    #dump = json.dumps(devices)
-    #f = open(DATABASE_FILE_NAME,"w")
-    #f.write(dump)
-    #f.close()
+    f = open(DATABASE_FILE_NAME,"w")
+    d = {}
+    for key, value in devices.iteritems():
+        d[key] = value.__dict__
+    print d
+    dump = json.dumps(d)
+    f.write(dump)
+    f.close()
 
-def zero_database ():
-    lights = {}
-    update_database(lights)
+# def zero_database ():
+#     lights = {}
+#     update_database(lights)
 
 def add_device(device_id,ip_str,json_encoded_features):
     l = light.Light(False,device_id,ip_str)
@@ -47,7 +63,12 @@ def add_device(device_id,ip_str,json_encoded_features):
 # Index route
 @app.route("/")
 def index():
-  # TODO list lights
+  if lights:
+      print "calling lights from index"
+      print lights
+  else:
+      print "lights is null"
+      print lights
   # Render the index.html template passing the value of the sensor
   return render_template('index.html', sensors=lights)
 
@@ -61,6 +82,12 @@ def about():
 def detail(guid):
     light = lights[guid]
     return render_template('device.html', device=light)
+
+@app.route("/update/<string:guid>/<string:variable_name>/<int:status>", methods=['POST','GET'])
+def custom_command(guid,variable_name,status):
+    print "custom command received: " + str(status)
+    return "custom command received: " + str(status) 
+
 
 # Change LED value POST request.
 @app.route("/change_status/<string:guid>/<int:status>", methods=['POST','GET'])
@@ -111,5 +138,7 @@ def subscribe(guid):
 # Starts the app listening to port 5000 with debug mode
 if __name__ == "__main__":
   # read data from file (lights)
-  load_database()
+  global lights
+  lights = {}
+  load_database(lights)
   app.run(host="0.0.0.0", debug=True)
