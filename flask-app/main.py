@@ -29,7 +29,6 @@ def load_database(devices):
     except ValueError:
         print "ValueError Reading Database"
         f.close()
-    f.close()
 
 
 def update_database (devices):
@@ -86,7 +85,7 @@ def detail(guid):
 @app.route("/update/<string:guid>/<string:variable_name>/<int:status>", methods=['POST','GET'])
 def custom_command(guid,variable_name,status):
     print "custom command received: " + str(status)
-    return "custom command received: " + str(status) 
+    return "custom command received: " + str(status)
 
 
 # Change LED value POST request.
