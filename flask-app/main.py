@@ -83,10 +83,11 @@ def detail(guid):
     light = lights[guid]
     return render_template('device.html', device=light)
 
-@app.route("/update/<string:guid>/<string:variable_name>/<int:status>", methods=['POST','GET'])
+@app.route("/set/<string:guid>/<string:variable_name>/<int:status>", methods=['POST','GET'])
 def custom_command(guid,variable_name,status):
     print "custom command received: " + str(status)
-    return "custom command received: " + str(status) 
+    result = lights[guid].request(variable_name,status)
+    return result
 
 
 # Change LED value POST request.

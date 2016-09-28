@@ -15,12 +15,12 @@ def sendToLightClientSocket (command):
 	s.close()
 	print 'Received', repr(data)
 
-def sendToLightClient (ip,command):
+def sendToLightClient (ip,command,value):
 	print "send command to client"
 	print command
 	HOST = ip    	# The remote host
 	PORT = '8080'              		# The same port as used by the server
-	url = 'http://' + HOST + ':' + PORT + '/gpio/' + command
+	url = 'http://' + HOST + ':' + PORT + '/' +command+ '/' + str(value)
 	r = requests.get(url);
 	print r
 	print r.content
@@ -32,6 +32,7 @@ def as_light(dct):
   if '__light__' in dct:
     return Light(dct['value'], dct['id'], dct['ip'])
   return dct
+
 
 #class ComplexEncoder(json.JSONEncoder):
 #  def default(self, obj):
@@ -71,11 +72,23 @@ class Light(object):
 
 	def change_led(self, value):
 		if value:
-			response = sendToLightClient(self.IP,'0')
+			response = sendToLightClient(self.IP, 'gpio','0')
 		else:
-			response = sendToLightClient(self.IP,'1')
+			response = sendToLightClient(self.IP, 'gpio','1')
 			#self.update_status (response)
 		return response
 
+	def request(self,variable_name, value):
+		response = sendToLightClient(self.IP,variable_name,value)
+		#self.update_from_response(response)
+		return response
+
+	def update_from_response(self,response):
+		dict = json.loads(response)
+		for key,value in dict.iteritems():
+			#self.FEATURES
+			print key + ">" + value
+
+
 	def __str__(self):
-		return '{ \'value\':'+ self.VALUE + ',' +'}'
+		return '{ \'value\':'+ str(self.VALUE) + ',' +'}'

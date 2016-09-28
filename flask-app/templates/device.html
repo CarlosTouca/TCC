@@ -25,13 +25,14 @@
   			    crossorigin="anonymous"></script>
     <script>
     function send_bool(guid, variable_name, div_id) {
-      alert($('#'+div_id).value);
+      var input_value = Number($("#value_"+div_id).val());
+      //alert(Boolean(input_value));
         $.ajax({
-          url:'/update/'+guid+'/'+variable_name+'/0',
+          url:'/set/'+guid+'/'+variable_name+'/'+input_value,
           data:'data',
           type:'POST',
           success: function(response) {
-            alert('success')
+            $('#div_sts_'+div_id).html(response);
           },
           error: function(response) {
             alert('error');
@@ -39,18 +40,18 @@
         });
     }
     function send_uint(guid, variable_name, div_id) {
-      val = $('#'+div_id).value;
-      alert(val);
+      var input_value = Number($("#value_"+div_id).val());
+      //alert(input_value);
 
         $.ajax({
-          url:'/'+guid+'/'+variable_name+'/0',
+          url:'/set/'+guid+'/'+variable_name+'/'+input_value,
           data:'data',
           type:'POST',
           success: function(response) {
-            $('#div'+div_id).html(response);
+            $('#div_sts_'+div_id).html(response);
           },
           error: function(response) {
-            alert('error');
+            alert('error '+response);
           }
         });
     }
@@ -73,25 +74,29 @@
     <div class="jumbotron">
       <h1>{{device.DEVICE_ID}}</h1>
       <p class="lead">{{device.DEVICE_ID}}</p>
-      {% for key, value in device.FEATURES.iteritems() %}
           <div class="row marketing">
+            {% for key, value in device.FEATURES.iteritems() %}
+              <h4>
               <div id='div{{loop.index}}'>
-                <span>{{ key }}:</span>
-                <span>{{ value }}</span>
-                <div id="divvalue_{{loop.index}}"/>
+                <span>{{ key }}</span>
+                <span>({{ value }})</span>
                 {% if value == "int": %}
                   <input id="value_{{loop.index}}"/>
-                  <button type="button" id="send_int" onclick="send_uint('{{ device.DEVICE_ID }}', '{{ key }}', 'value_{{loop.index}}')" class="btn btn-success">send</button>
+                  <button type="button" id="send_int" onclick="send_uint('{{ device.DEVICE_ID }}', '{{ key }}', '{{loop.index}}')" class="btn btn-success">echo!</button>
                 {% elif value == "uint": %}
                   <input id="value_{{loop.index}}"/>
-                  <button type="button" id="send_uint" onclick="send_uint('{{ device.DEVICE_ID }}', '{{ key }}', 'value_{{loop.index}}')" class="btn btn-success">send</button>
+                  <button type="button" id="send_uint" onclick="send_uint('{{ device.DEVICE_ID }}', '{{ key }}', '{{loop.index}}')" class="btn btn-success">echo!</button>
                 {% elif value == "bool": %}
                   <input id="value_{{loop.index}}"/>
-                  <button type="button" id="send_bool" onclick="send_bool('{{ device.DEVICE_ID }}', '{{ key }}', 'value_{{loop.index}}')" class="btn btn-success">on</button>
+                  <button type="button" id="send_bool" onclick="send_bool('{{ device.DEVICE_ID }}', '{{ key }}', '{{loop.index}}')" class="btn btn-success">echo!</button>
                 {% endif %}
               </div>
+              </h4>
+              <h5>
+                <div id="div_sts_{{loop.index}}"><br/></div>
+              </h5>
+              {% endfor %}
           </div>
-      {% endfor %}
     </div>
 
     <footer class="footer">
