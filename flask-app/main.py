@@ -29,7 +29,6 @@ def load_database(devices):
     except ValueError:
         print "ValueError Reading Database"
         f.close()
-    f.close()
 
 
 def update_database (devices):
